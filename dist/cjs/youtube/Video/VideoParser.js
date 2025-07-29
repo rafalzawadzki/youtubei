@@ -9,6 +9,7 @@ class VideoParser {
         var _a, _b, _c;
         const videoInfo = BaseVideo_1.BaseVideoParser.parseRawData(data);
         target.duration = +videoInfo.videoDetails.lengthSeconds;
+        target.playabilityStatus = data.playerResponse.playabilityStatus;
         const itemSectionRenderer = (_a = data.response.contents.twoColumnWatchNextResults.results.results.contents
             .reverse()
             .find((c) => c.itemSectionRenderer)) === null || _a === void 0 ? void 0 : _a.itemSectionRenderer;

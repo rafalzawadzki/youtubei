@@ -7,11 +7,16 @@ export declare type Chapter = {
     start: number;
     thumbnails: Thumbnails;
 };
+export interface PlayabilityStatus {
+    status: string;
+    reason?: string;
+}
 /** @hidden */
 interface VideoProperties extends BaseVideoProperties {
     duration?: number;
     comments?: VideoComments;
     chapters?: Chapter[];
+    playabilityStatus?: PlayabilityStatus;
 }
 /** Represents a Video, usually returned from `client.getVideo()`  */
 export declare class Video extends BaseVideo implements VideoProperties {
@@ -21,6 +26,8 @@ export declare class Video extends BaseVideo implements VideoProperties {
     chapters: Chapter[];
     /** {@link Continuable} of videos inside a {@link Video} */
     comments: VideoComments;
+    /** The playability status of this video */
+    playabilityStatus: PlayabilityStatus;
     /** @hidden */
     constructor(attr: VideoProperties);
     /**

@@ -19,6 +19,7 @@ var VideoParser = /** @class */ (function () {
         var _a, _b, _c;
         var videoInfo = BaseVideoParser.parseRawData(data);
         target.duration = +videoInfo.videoDetails.lengthSeconds;
+        target.playabilityStatus = data.playerResponse.playabilityStatus;
         var itemSectionRenderer = (_a = data.response.contents.twoColumnWatchNextResults.results.results.contents
             .reverse()
             .find(function (c) { return c.itemSectionRenderer; })) === null || _a === void 0 ? void 0 : _a.itemSectionRenderer;
