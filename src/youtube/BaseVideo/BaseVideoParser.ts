@@ -31,7 +31,9 @@ export class BaseVideoParser {
 
 		// Like Count and Dislike Count
 		const topLevelButtons = videoInfo.videoActions.menuRenderer.topLevelButtons;
-		target.likeCount = stripToInt(BaseVideoParser.parseButtonRenderer(topLevelButtons[0]));
+		target.likeCount = topLevelButtons
+			? stripToInt(BaseVideoParser.parseButtonRenderer(topLevelButtons[0]))
+			: null;
 
 		// Tags and description
 		target.tags =
@@ -103,6 +105,15 @@ export class BaseVideoParser {
 			return new VideoCompact({ client }).load(data.compactVideoRenderer);
 		} else if ("compactRadioRenderer" in data) {
 			return new PlaylistCompact({ client }).load(data.compactRadioRenderer);
+		} else if ("lockupViewModel" in data) {
+			// new data structure for related contents
+			const type = data.lockupViewModel.contentType;
+
+			if (type === "LOCKUP_CONTENT_TYPE_VIDEO") {
+				return new VideoCompact({ client }).loadLockup(data.lockupViewModel);
+			} else if (type === "LOCKUP_CONTENT_TYPE_PLAYLIST") {
+				return new PlaylistCompact({ client }).loadLockup(data.lockupViewModel);
+			}
 		}
 	}
 
