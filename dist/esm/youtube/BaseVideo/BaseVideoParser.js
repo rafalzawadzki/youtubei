@@ -38,7 +38,9 @@ var BaseVideoParser = /** @class */ (function () {
         });
         // Like Count and Dislike Count
         var topLevelButtons = videoInfo.videoActions.menuRenderer.topLevelButtons;
-        target.likeCount = stripToInt(BaseVideoParser.parseButtonRenderer(topLevelButtons[0]));
+        target.likeCount = topLevelButtons
+            ? stripToInt(BaseVideoParser.parseButtonRenderer(topLevelButtons[0]))
+            : null;
         // Tags and description
         target.tags =
             ((_b = (_a = videoInfo.superTitleLink) === null || _a === void 0 ? void 0 : _a.runs) === null || _b === void 0 ? void 0 : _b.map(function (r) { return r.text.trim(); }).filter(function (t) { return t; })) || [];
@@ -82,6 +84,16 @@ var BaseVideoParser = /** @class */ (function () {
         }
         else if ("compactRadioRenderer" in data) {
             return new PlaylistCompact({ client: client }).load(data.compactRadioRenderer);
+        }
+        else if ("lockupViewModel" in data) {
+            // new data structure for related contents
+            var type = data.lockupViewModel.contentType;
+            if (type === "LOCKUP_CONTENT_TYPE_VIDEO") {
+                return new VideoCompact({ client: client }).loadLockup(data.lockupViewModel);
+            }
+            else if (type === "LOCKUP_CONTENT_TYPE_PLAYLIST") {
+                return new PlaylistCompact({ client: client }).loadLockup(data.lockupViewModel);
+            }
         }
     };
     BaseVideoParser.parseRelatedFromSecondaryContent = function (secondaryContents, client) {

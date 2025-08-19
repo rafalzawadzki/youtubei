@@ -9,29 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChannelPlaylists = void 0;
+exports.ChannelPosts = void 0;
 const common_1 = require("../../common");
 const Continuable_1 = require("../Continuable");
-const PlaylistCompact_1 = require("../PlaylistCompact");
+const Post_1 = require("../Post");
 const constants_1 = require("../constants");
 const BaseChannelParser_1 = require("./BaseChannelParser");
 /**
- * {@link Continuable} of playlists inside a {@link BaseChannel}
+ * {@link Continuable} of posts inside a {@link BaseChannel}
  *
  * @example
  * ```js
  * const channel = await youtube.findOne(CHANNEL_NAME, {type: "channel"});
- * await channel.playlists.next();
- * console.log(channel.playlists.items) // first 30 playlists
+ * await channel.posts.next();
+ * console.log(channel.posts.items) // first 30 posts
  *
- * let newPlaylists = await channel.playlists.next();
- * console.log(newPlaylists) // 30 loaded playlists
- * console.log(channel.playlists.items) // first 60 playlists
+ * let newPosts = await channel.posts.next();
+ * console.log(newPosts) // 30 loaded posts
+ * console.log(channel.posts.items) // first 60 posts
  *
- * await channel.playlists.next(0); // load the rest of the playlists in the channel
+ * await channel.posts.next(0); // load the rest of the posts in the channel
  * ```
  */
-class ChannelPlaylists extends Continuable_1.Continuable {
+class ChannelPosts extends Continuable_1.Continuable {
     /** @hidden */
     constructor({ client, channel }) {
         super({ client, strictContinuationCheck: true });
@@ -40,28 +40,20 @@ class ChannelPlaylists extends Continuable_1.Continuable {
     fetch() {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            const params = BaseChannelParser_1.BaseChannelParser.TAB_TYPE_PARAMS.playlists;
+            const params = BaseChannelParser_1.BaseChannelParser.TAB_TYPE_PARAMS.posts;
             const response = yield this.client.http.post(`${constants_1.I_END_POINT}/browse`, {
                 data: { browseId: (_a = this.channel) === null || _a === void 0 ? void 0 : _a.id, params, continuation: this.continuation },
             });
-            const items = BaseChannelParser_1.BaseChannelParser.parseTabData("playlists", response.data);
+            const items = BaseChannelParser_1.BaseChannelParser.parseTabData("posts", response.data);
             const continuation = common_1.getContinuationFromItems(items);
-            const data = items.filter((i) => "gridPlaylistRenderer" in i || "lockupViewModel" in i);
+            const data = items
+                .map((i) => { var _a, _b; return (_b = (_a = i.backstagePostThreadRenderer) === null || _a === void 0 ? void 0 : _a.post) === null || _b === void 0 ? void 0 : _b.backstagePostRenderer; })
+                .filter((i) => i !== undefined);
             return {
                 continuation,
-                items: data.map((i) => {
-                    const playlist = new PlaylistCompact_1.PlaylistCompact({
-                        client: this.client,
-                        channel: this.channel,
-                    });
-                    if (i.gridPlaylistRenderer)
-                        playlist.load(i.gridPlaylistRenderer);
-                    else if (i.lockupViewModel)
-                        playlist.loadLockup(i.lockupViewModel);
-                    return playlist;
-                }),
+                items: data.map((i) => new Post_1.Post({ client: this.client, channel: this.channel }).load(i)),
             };
         });
     }
 }
-exports.ChannelPlaylists = ChannelPlaylists;
+exports.ChannelPosts = ChannelPosts;

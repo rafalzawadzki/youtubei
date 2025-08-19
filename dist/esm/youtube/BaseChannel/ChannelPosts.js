@@ -47,76 +47,65 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { Base } from "../Base";
-import { VideoCompactParser } from "./VideoCompactParser";
-/** Represent a compact video (e.g. from search result, playlist's videos, channel's videos) */
-var VideoCompact = /** @class */ (function (_super) {
-    __extends(VideoCompact, _super);
+import { getContinuationFromItems } from "../../common";
+import { Continuable } from "../Continuable";
+import { Post } from "../Post";
+import { I_END_POINT } from "../constants";
+import { BaseChannelParser } from "./BaseChannelParser";
+/**
+ * {@link Continuable} of posts inside a {@link BaseChannel}
+ *
+ * @example
+ * ```js
+ * const channel = await youtube.findOne(CHANNEL_NAME, {type: "channel"});
+ * await channel.posts.next();
+ * console.log(channel.posts.items) // first 30 posts
+ *
+ * let newPosts = await channel.posts.next();
+ * console.log(newPosts) // 30 loaded posts
+ * console.log(channel.posts.items) // first 60 posts
+ *
+ * await channel.posts.next(0); // load the rest of the posts in the channel
+ * ```
+ */
+var ChannelPosts = /** @class */ (function (_super) {
+    __extends(ChannelPosts, _super);
     /** @hidden */
-    function VideoCompact(attr) {
-        var _this = _super.call(this, attr.client) || this;
-        Object.assign(_this, attr);
+    function ChannelPosts(_a) {
+        var client = _a.client, channel = _a.channel;
+        var _this = _super.call(this, { client: client, strictContinuationCheck: true }) || this;
+        _this.channel = channel;
         return _this;
     }
-    Object.defineProperty(VideoCompact.prototype, "isPrivateOrDeleted", {
-        /** Whether this video is private / deleted or not, only useful in playlist's videos */
-        get: function () {
-            return !this.duration;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    /**
-     * Load this instance with raw data from Youtube
-     *
-     * @hidden
-     */
-    VideoCompact.prototype.load = function (data) {
-        VideoCompactParser.loadVideoCompact(this, data);
-        return this;
-    };
-    /**
-     * Load this instance with raw lockup data from Youtube
-     *
-     * @hidden
-     */
-    VideoCompact.prototype.loadLockup = function (data) {
-        VideoCompactParser.loadLockupVideoCompact(this, data);
-        return this;
-    };
-    /**
-     * Get {@link Video} object based on current video id
-     *
-     * Equivalent to
-     * ```js
-     * client.getVideo(videoCompact.id);
-     * ```
-     */
-    VideoCompact.prototype.getVideo = function () {
+    ChannelPosts.prototype.fetch = function () {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.client.getVideo(this.id)];
-                    case 1: return [2 /*return*/, _a.sent()];
+            var params, response, items, continuation, data;
+            var _this = this;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        params = BaseChannelParser.TAB_TYPE_PARAMS.posts;
+                        return [4 /*yield*/, this.client.http.post(I_END_POINT + "/browse", {
+                                data: { browseId: (_a = this.channel) === null || _a === void 0 ? void 0 : _a.id, params: params, continuation: this.continuation },
+                            })];
+                    case 1:
+                        response = _b.sent();
+                        items = BaseChannelParser.parseTabData("posts", response.data);
+                        continuation = getContinuationFromItems(items);
+                        data = items
+                            .map(function (i) { var _a, _b; return (_b = (_a = i.backstagePostThreadRenderer) === null || _a === void 0 ? void 0 : _a.post) === null || _b === void 0 ? void 0 : _b.backstagePostRenderer; })
+                            .filter(function (i) { return i !== undefined; });
+                        return [2 /*return*/, {
+                                continuation: continuation,
+                                items: data.map(function (i) {
+                                    return new Post({ client: _this.client, channel: _this.channel }).load(i);
+                                }),
+                            }];
                 }
             });
         });
     };
-    /**
-     * Get Video transcript (if exists)
-     *
-     * Equivalent to
-     * ```js
-     * client.getVideoTranscript(video.id);
-     * ```
-     */
-    VideoCompact.prototype.getTranscript = function (languageCode) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.client.getVideoTranscript(this.id, languageCode)];
-            });
-        });
-    };
-    return VideoCompact;
-}(Base));
-export { VideoCompact };
+    return ChannelPosts;
+}(Continuable));
+export { ChannelPosts };
