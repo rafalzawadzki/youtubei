@@ -31,10 +31,11 @@ var BaseVideoParser = /** @class */ (function () {
         var _e = videoInfo.owner.videoOwnerRenderer, title = _e.title, thumbnail = _e.thumbnail, subscriberCountText = _e.subscriberCountText;
         target.channel = new BaseChannel({
             client: target.client,
-            id: title.runs[0].navigationEndpoint.browseEndpoint.browseId,
-            name: title.runs[0].text,
+            id: title.runs[0].navigationEndpoint.browseEndpoint.browseId || videoInfo.channelId,
+            name: title.runs[0].text || videoInfo.author,
             subscriberCount: subscriberCountText === null || subscriberCountText === void 0 ? void 0 : subscriberCountText.simpleText,
-            thumbnails: new Thumbnails().load(thumbnail.thumbnails),
+            thumbnails: (thumbnail === null || thumbnail === void 0 ? void 0 : thumbnail.thumbnails) ? new Thumbnails().load(thumbnail.thumbnails)
+                : undefined,
         });
         // Like Count and Dislike Count
         var topLevelButtons = videoInfo.videoActions.menuRenderer.topLevelButtons;
