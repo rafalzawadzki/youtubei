@@ -32,6 +32,8 @@ export class BaseVideo extends Base implements BaseVideoProperties {
 	description!: string;
 	/** The channel that uploaded this video */
 	channel!: BaseChannel;
+	/** The collaborators of this video */
+	channels!: BaseChannel[] | null;
 	/** The date this video is uploaded at */
 	uploadDate!: string;
 	/** How many view does this video have, null if the view count is hidden */
