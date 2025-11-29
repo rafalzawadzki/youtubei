@@ -23,10 +23,12 @@ export class BaseVideoParser {
 
 		target.channel = new BaseChannel({
 			client: target.client,
-			id: title.runs[0].navigationEndpoint.browseEndpoint.browseId,
-			name: title.runs[0].text,
+			id: title.runs[0].navigationEndpoint.browseEndpoint.browseId || videoInfo.channelId,
+			name: title.runs[0].text || videoInfo.author,
 			subscriberCount: subscriberCountText?.simpleText,
-			thumbnails: new Thumbnails().load(thumbnail.thumbnails),
+			thumbnails: thumbnail?.thumbnails
+				? new Thumbnails().load(thumbnail.thumbnails)
+				: undefined, // @fixme couldn't figure out how to add fallback
 		});
 
 		// Like Count and Dislike Count
