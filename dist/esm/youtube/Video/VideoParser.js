@@ -16,7 +16,7 @@ var VideoParser = /** @class */ (function () {
     function VideoParser() {
     }
     VideoParser.loadVideo = function (target, data) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e;
         var videoInfo = BaseVideoParser.parseRawData(data);
         target.duration = +videoInfo.videoDetails.lengthSeconds;
         target.playabilityStatus = data.playerResponse.playabilityStatus;
@@ -24,7 +24,7 @@ var VideoParser = /** @class */ (function () {
             .reverse()
             .find(function (c) { return c.itemSectionRenderer; })) === null || _a === void 0 ? void 0 : _a.itemSectionRenderer;
         target.comments.continuation = getContinuationFromItems((itemSectionRenderer === null || itemSectionRenderer === void 0 ? void 0 : itemSectionRenderer.contents) || []);
-        var chapters = (_c = (_b = data.response.playerOverlays.playerOverlayRenderer.decoratedPlayerBarRenderer) === null || _b === void 0 ? void 0 : _b.decoratedPlayerBarRenderer.playerBar.multiMarkersPlayerBarRenderer.markersMap) === null || _c === void 0 ? void 0 : _c[0].value.chapters;
+        var chapters = (_e = (_d = (_c = (_b = data.response.playerOverlays.playerOverlayRenderer.decoratedPlayerBarRenderer) === null || _b === void 0 ? void 0 : _b.decoratedPlayerBarRenderer.playerBar) === null || _c === void 0 ? void 0 : _c.multiMarkersPlayerBarRenderer) === null || _d === void 0 ? void 0 : _d.markersMap) === null || _e === void 0 ? void 0 : _e[0].value.chapters;
         target.chapters =
             (chapters === null || chapters === void 0 ? void 0 : chapters.map(function (_a) {
                 var c = _a.chapterRenderer;

@@ -6,7 +6,7 @@ const BaseVideo_1 = require("../BaseVideo");
 const Comment_1 = require("../Comment");
 class VideoParser {
     static loadVideo(target, data) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e;
         const videoInfo = BaseVideo_1.BaseVideoParser.parseRawData(data);
         target.duration = +videoInfo.videoDetails.lengthSeconds;
         target.playabilityStatus = data.playerResponse.playabilityStatus;
@@ -14,7 +14,7 @@ class VideoParser {
             .reverse()
             .find((c) => c.itemSectionRenderer)) === null || _a === void 0 ? void 0 : _a.itemSectionRenderer;
         target.comments.continuation = common_1.getContinuationFromItems((itemSectionRenderer === null || itemSectionRenderer === void 0 ? void 0 : itemSectionRenderer.contents) || []);
-        const chapters = (_c = (_b = data.response.playerOverlays.playerOverlayRenderer.decoratedPlayerBarRenderer) === null || _b === void 0 ? void 0 : _b.decoratedPlayerBarRenderer.playerBar.multiMarkersPlayerBarRenderer.markersMap) === null || _c === void 0 ? void 0 : _c[0].value.chapters;
+        const chapters = (_e = (_d = (_c = (_b = data.response.playerOverlays.playerOverlayRenderer.decoratedPlayerBarRenderer) === null || _b === void 0 ? void 0 : _b.decoratedPlayerBarRenderer.playerBar) === null || _c === void 0 ? void 0 : _c.multiMarkersPlayerBarRenderer) === null || _d === void 0 ? void 0 : _d.markersMap) === null || _e === void 0 ? void 0 : _e[0].value.chapters;
         target.chapters =
             (chapters === null || chapters === void 0 ? void 0 : chapters.map(({ chapterRenderer: c }) => ({
                 title: c.title.simpleText,
