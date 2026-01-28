@@ -7,6 +7,7 @@ import { Playlist } from "../Playlist";
 import { SearchOptions, SearchResult, SearchResultItem } from "../SearchResult";
 import { Video } from "../Video";
 import {
+	ANDROID_CLIENT,
 	BASE_URL,
 	INNERTUBE_API_KEY,
 	INNERTUBE_CLIENT_NAME,
@@ -108,7 +109,12 @@ export class Client {
 	/** Get video information by video id or URL */
 	async getVideo<T extends Video | LiveVideo | undefined>(videoId: string): Promise<T> {
 		const nextPromise = this.http.post(`${I_END_POINT}/next`, { data: { videoId } });
-		const playerPromise = this.http.post(`${I_END_POINT}/player`, { data: { videoId } });
+		// Use ANDROID client for /player endpoint as WEB client returns UNPLAYABLE for some videos
+		const playerPromise = this.http.postWithClient(
+			`${I_END_POINT}/player`,
+			ANDROID_CLIENT,
+			{ data: { videoId } }
+		);
 
 		const [nextResponse, playerResponse] = await Promise.all([nextPromise, playerPromise]);
 
