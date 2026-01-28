@@ -113,6 +113,46 @@ export class HTTP {
 		});
 	}
 
+	/**
+	 * POST request with custom client context (used for player endpoint with ANDROID client)
+	 */
+	async postWithClient(
+		path: string,
+		clientConfig: { clientName: string; clientVersion: string; androidSdkVersion?: number; userAgent?: string },
+		options?: Partial<Options>
+	): Promise<Response> {
+		const clientContext: Record<string, unknown> = {
+			clientName: clientConfig.clientName,
+			clientVersion: clientConfig.clientVersion,
+			...this.defaultClientOptions,
+		};
+		if (clientConfig.androidSdkVersion) {
+			clientContext.androidSdkVersion = clientConfig.androidSdkVersion;
+		}
+
+		const headers: Record<string, string> = {};
+		if (clientConfig.userAgent) {
+			headers["user-agent"] = clientConfig.userAgent;
+		}
+
+		return await this.request(path, {
+			...options,
+			method: "POST",
+			headers,
+			params: {
+				key: this.apiKey,
+				prettyPrint: "false",
+				...options?.params,
+			},
+			data: {
+				context: {
+					client: clientContext,
+				},
+				...options?.data,
+			},
+		});
+	}
+
 	private async request(path: string, partialOptions: Partial<Options>): Promise<Response> {
 		if (this.authorizationPromise) await this.authorizationPromise;
 
