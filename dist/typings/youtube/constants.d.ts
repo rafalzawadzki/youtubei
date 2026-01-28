@@ -5,3 +5,10 @@ export declare const BASE_URL = "www.youtube.com";
 export declare const I_END_POINT = "/youtubei/v1";
 export declare const LIVE_CHAT_END_POINT: string;
 export declare const COMMENT_END_POINT = "/comment_service_ajax";
+export declare const ANDROID_CLIENT: {
+    clientName: string;
+    clientVersion: string;
+    clientNameId: string;
+    userAgent: string;
+    androidSdkVersion: number;
+};

@@ -68,7 +68,7 @@ import { MixPlaylist } from "../MixPlaylist";
 import { Playlist } from "../Playlist";
 import { SearchResult } from "../SearchResult";
 import { Video } from "../Video";
-import { BASE_URL, INNERTUBE_API_KEY, INNERTUBE_CLIENT_NAME, INNERTUBE_CLIENT_VERSION, I_END_POINT, } from "../constants";
+import { ANDROID_CLIENT, BASE_URL, INNERTUBE_API_KEY, INNERTUBE_CLIENT_NAME, INNERTUBE_CLIENT_VERSION, I_END_POINT, } from "../constants";
 /** Youtube Client */
 var Client = /** @class */ (function () {
     function Client(options) {
@@ -167,7 +167,7 @@ var Client = /** @class */ (function () {
                 switch (_d.label) {
                     case 0:
                         nextPromise = this.http.post(I_END_POINT + "/next", { data: { videoId: videoId } });
-                        playerPromise = this.http.post(I_END_POINT + "/player", { data: { videoId: videoId } });
+                        playerPromise = this.http.postWithClient(I_END_POINT + "/player", ANDROID_CLIENT, { data: { videoId: videoId } });
                         return [4 /*yield*/, Promise.all([nextPromise, playerPromise])];
                     case 1:
                         _c = __read.apply(void 0, [_d.sent(), 2]), nextResponse = _c[0], playerResponse = _c[1];

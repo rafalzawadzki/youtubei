@@ -48,6 +48,15 @@ export declare class HTTP {
     constructor(options: HTTPOptions);
     get(path: string, options?: Partial<Options>): Promise<Response>;
     post(path: string, options?: Partial<Options>): Promise<Response>;
+    /**
+     * POST request with custom client context (used for player endpoint with ANDROID client)
+     */
+    postWithClient(path: string, clientConfig: {
+        clientName: string;
+        clientVersion: string;
+        androidSdkVersion?: number;
+        userAgent?: string;
+    }, options?: Partial<Options>): Promise<Response>;
     private request;
     private parseCookie;
     private authorize;

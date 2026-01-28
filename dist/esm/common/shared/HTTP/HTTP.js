@@ -120,6 +120,31 @@ var HTTP = /** @class */ (function () {
             });
         });
     };
+    /**
+     * POST request with custom client context (used for player endpoint with ANDROID client)
+     */
+    HTTP.prototype.postWithClient = function (path, clientConfig, options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var clientContext, headers;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        clientContext = __assign({ clientName: clientConfig.clientName, clientVersion: clientConfig.clientVersion }, this.defaultClientOptions);
+                        if (clientConfig.androidSdkVersion) {
+                            clientContext.androidSdkVersion = clientConfig.androidSdkVersion;
+                        }
+                        headers = {};
+                        if (clientConfig.userAgent) {
+                            headers["user-agent"] = clientConfig.userAgent;
+                        }
+                        return [4 /*yield*/, this.request(path, __assign(__assign({}, options), { method: "POST", headers: headers, params: __assign({ key: this.apiKey, prettyPrint: "false" }, options === null || options === void 0 ? void 0 : options.params), data: __assign({ context: {
+                                        client: clientContext,
+                                    } }, options === null || options === void 0 ? void 0 : options.data) }))];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     HTTP.prototype.request = function (path, partialOptions) {
         return __awaiter(this, void 0, void 0, function () {
             var options, urlString, url, _a, _b, _c, key, value, response, data;

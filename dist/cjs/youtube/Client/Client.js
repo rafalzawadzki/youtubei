@@ -83,7 +83,8 @@ class Client {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const nextPromise = this.http.post(`${constants_1.I_END_POINT}/next`, { data: { videoId } });
-            const playerPromise = this.http.post(`${constants_1.I_END_POINT}/player`, { data: { videoId } });
+            // Use ANDROID client for /player endpoint as WEB client returns UNPLAYABLE for some videos
+            const playerPromise = this.http.postWithClient(`${constants_1.I_END_POINT}/player`, constants_1.ANDROID_CLIENT, { data: { videoId } });
             const [nextResponse, playerResponse] = yield Promise.all([nextPromise, playerPromise]);
             const data = { response: nextResponse.data, playerResponse: playerResponse.data };
             if (!((_b = (_a = data.response) === null || _a === void 0 ? void 0 : _a.contents) === null || _b === void 0 ? void 0 : _b.twoColumnWatchNextResults.results.results.contents) ||

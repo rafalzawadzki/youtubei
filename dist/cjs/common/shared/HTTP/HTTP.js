@@ -51,6 +51,24 @@ class HTTP {
                     }, serviceIntegrityDimensions: this.pot ? { poToken: this.pot.token } : undefined }, options === null || options === void 0 ? void 0 : options.data) }));
         });
     }
+    /**
+     * POST request with custom client context (used for player endpoint with ANDROID client)
+     */
+    postWithClient(path, clientConfig, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const clientContext = Object.assign({ clientName: clientConfig.clientName, clientVersion: clientConfig.clientVersion }, this.defaultClientOptions);
+            if (clientConfig.androidSdkVersion) {
+                clientContext.androidSdkVersion = clientConfig.androidSdkVersion;
+            }
+            const headers = {};
+            if (clientConfig.userAgent) {
+                headers["user-agent"] = clientConfig.userAgent;
+            }
+            return yield this.request(path, Object.assign(Object.assign({}, options), { method: "POST", headers, params: Object.assign({ key: this.apiKey, prettyPrint: "false" }, options === null || options === void 0 ? void 0 : options.params), data: Object.assign({ context: {
+                        client: clientContext,
+                    } }, options === null || options === void 0 ? void 0 : options.data) }));
+        });
+    }
     request(path, partialOptions) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.authorizationPromise)
