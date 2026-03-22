@@ -69,37 +69,43 @@ export class VideoCompactParser {
 	}
 
 	static loadLockupVideoCompact(target: VideoCompact, data: YoutubeRawData): VideoCompact {
-		const lockupMetadataViewModel = data.metadata.lockupMetadataViewModel;
-		const decoratedAvatarViewModel = lockupMetadataViewModel.image.decoratedAvatarViewModel;
+		const lockupMetadataViewModel = data.metadata?.lockupMetadataViewModel;
+		const decoratedAvatarViewModel = lockupMetadataViewModel?.image?.decoratedAvatarViewModel;
 		const thumbnailBadge =
-			data.contentImage.thumbnailViewModel.overlays[0].thumbnailOverlayBadgeViewModel
-				.thumbnailBadges[0].thumbnailBadgeViewModel;
-		const metadataRows = lockupMetadataViewModel.metadata.contentMetadataViewModel.metadataRows;
+			data.contentImage?.thumbnailViewModel?.overlays?.[0]?.thumbnailOverlayBadgeViewModel
+				?.thumbnailBadges?.[0]?.thumbnailBadgeViewModel;
+		const metadataRows = lockupMetadataViewModel?.metadata?.contentMetadataViewModel?.metadataRows;
 
-		const channel = new BaseChannel({
-			client: target.client,
-			name: metadataRows[0].metadataParts[0].text.content,
-			id:
-				decoratedAvatarViewModel.rendererContext.commandContext.onTap.innertubeCommand
-					.browseEndpoint.browseId,
-			thumbnails: new Thumbnails().load(
-				decoratedAvatarViewModel.avatar.avatarViewModel.image.sources
-			),
-		});
+		if (decoratedAvatarViewModel && metadataRows?.[0]) {
+			const channel = new BaseChannel({
+				client: target.client,
+				name: metadataRows[0].metadataParts?.[0]?.text?.content || "",
+				id:
+					decoratedAvatarViewModel.rendererContext?.commandContext?.onTap?.innertubeCommand
+						?.browseEndpoint?.browseId || "",
+				thumbnails: decoratedAvatarViewModel.avatar?.avatarViewModel?.image?.sources
+					? new Thumbnails().load(
+							decoratedAvatarViewModel.avatar.avatarViewModel.image.sources
+					  )
+					: undefined,
+			});
+			target.channel = channel;
+		}
 
-		const isLive = thumbnailBadge.icon?.sources[0].clientResource.imageName === "LIVE";
+		const isLive = thumbnailBadge?.icon?.sources?.[0]?.clientResource?.imageName === "LIVE";
 
-		target.channel = channel;
 		target.id = data.contentId;
-		target.title = lockupMetadataViewModel.title.content;
-		target.isLive = thumbnailBadge.icon?.sources[0].clientResource.imageName === "LIVE";
-		target.duration = !isLive ? getDuration(thumbnailBadge.text) : null;
-		target.thumbnails = new Thumbnails().load(
-			data.contentImage.thumbnailViewModel.image.sources
-		);
-		target.viewCount = stripToInt(metadataRows[1].metadataParts[0].text.content);
-		target.uploadDate = !isLive
-			? metadataRows[1].metadataParts[metadataRows[1].metadataParts.length - 1].text.content
+		target.title = lockupMetadataViewModel?.title?.content || "";
+		target.isLive = isLive;
+		target.duration = !isLive && thumbnailBadge?.text ? getDuration(thumbnailBadge.text) : null;
+		target.thumbnails = data.contentImage?.thumbnailViewModel?.image?.sources
+			? new Thumbnails().load(data.contentImage.thumbnailViewModel.image.sources)
+			: new Thumbnails();
+		target.viewCount = metadataRows?.[1]?.metadataParts?.[0]?.text?.content
+			? stripToInt(metadataRows[1].metadataParts[0].text.content)
+			: null;
+		target.uploadDate = !isLive && metadataRows?.[1]?.metadataParts
+			? metadataRows[1].metadataParts[metadataRows[1].metadataParts.length - 1]?.text?.content
 			: undefined;
 
 		return target;
