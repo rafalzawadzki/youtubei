@@ -38,32 +38,33 @@ var VideoCompactParser = /** @class */ (function () {
         return target;
     };
     VideoCompactParser.loadLockupVideoCompact = function (target, data) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13;
         var lockupMetadataViewModel = (_a = data.metadata) === null || _a === void 0 ? void 0 : _a.lockupMetadataViewModel;
         var decoratedAvatarViewModel = (_b = lockupMetadataViewModel === null || lockupMetadataViewModel === void 0 ? void 0 : lockupMetadataViewModel.image) === null || _b === void 0 ? void 0 : _b.decoratedAvatarViewModel;
-        var thumbnailBadge = (_j = (_h = (_g = (_f = (_e = (_d = (_c = data.contentImage) === null || _c === void 0 ? void 0 : _c.thumbnailViewModel) === null || _d === void 0 ? void 0 : _d.overlays) === null || _e === void 0 ? void 0 : _e[0]) === null || _f === void 0 ? void 0 : _f.thumbnailOverlayBadgeViewModel) === null || _g === void 0 ? void 0 : _g.thumbnailBadges) === null || _h === void 0 ? void 0 : _h[0]) === null || _j === void 0 ? void 0 : _j.thumbnailBadgeViewModel;
-        var metadataRows = (_l = (_k = lockupMetadataViewModel === null || lockupMetadataViewModel === void 0 ? void 0 : lockupMetadataViewModel.metadata) === null || _k === void 0 ? void 0 : _k.contentMetadataViewModel) === null || _l === void 0 ? void 0 : _l.metadataRows;
+        var thumbnailOverlay = (_e = (_d = (_c = data.contentImage) === null || _c === void 0 ? void 0 : _c.thumbnailViewModel) === null || _d === void 0 ? void 0 : _d.overlays) === null || _e === void 0 ? void 0 : _e[0];
+        var thumbnailBadge = (_k = (((_g = (_f = thumbnailOverlay === null || thumbnailOverlay === void 0 ? void 0 : thumbnailOverlay.thumbnailBottomOverlayViewModel) === null || _f === void 0 ? void 0 : _f.badges) === null || _g === void 0 ? void 0 : _g[0]) || ((_j = (_h = thumbnailOverlay === null || thumbnailOverlay === void 0 ? void 0 : thumbnailOverlay.thumbnailOverlayBadgeViewModel) === null || _h === void 0 ? void 0 : _h.thumbnailBadges) === null || _j === void 0 ? void 0 : _j[0]))) === null || _k === void 0 ? void 0 : _k.thumbnailBadgeViewModel;
+        var metadataRows = (_m = (_l = lockupMetadataViewModel === null || lockupMetadataViewModel === void 0 ? void 0 : lockupMetadataViewModel.metadata) === null || _l === void 0 ? void 0 : _l.contentMetadataViewModel) === null || _m === void 0 ? void 0 : _m.metadataRows;
         if (decoratedAvatarViewModel && (metadataRows === null || metadataRows === void 0 ? void 0 : metadataRows[0])) {
             var channel = new BaseChannel({
                 client: target.client,
-                name: ((_p = (_o = (_m = metadataRows[0].metadataParts) === null || _m === void 0 ? void 0 : _m[0]) === null || _o === void 0 ? void 0 : _o.text) === null || _p === void 0 ? void 0 : _p.content) || "",
-                id: ((_u = (_t = (_s = (_r = (_q = decoratedAvatarViewModel.rendererContext) === null || _q === void 0 ? void 0 : _q.commandContext) === null || _r === void 0 ? void 0 : _r.onTap) === null || _s === void 0 ? void 0 : _s.innertubeCommand) === null || _t === void 0 ? void 0 : _t.browseEndpoint) === null || _u === void 0 ? void 0 : _u.browseId) || "",
-                thumbnails: ((_x = (_w = (_v = decoratedAvatarViewModel.avatar) === null || _v === void 0 ? void 0 : _v.avatarViewModel) === null || _w === void 0 ? void 0 : _w.image) === null || _x === void 0 ? void 0 : _x.sources) ? new Thumbnails().load(decoratedAvatarViewModel.avatar.avatarViewModel.image.sources)
+                name: ((_q = (_p = (_o = metadataRows[0].metadataParts) === null || _o === void 0 ? void 0 : _o[0]) === null || _p === void 0 ? void 0 : _p.text) === null || _q === void 0 ? void 0 : _q.content) || "",
+                id: ((_v = (_u = (_t = (_s = (_r = decoratedAvatarViewModel.rendererContext) === null || _r === void 0 ? void 0 : _r.commandContext) === null || _s === void 0 ? void 0 : _s.onTap) === null || _t === void 0 ? void 0 : _t.innertubeCommand) === null || _u === void 0 ? void 0 : _u.browseEndpoint) === null || _v === void 0 ? void 0 : _v.browseId) || "",
+                thumbnails: ((_y = (_x = (_w = decoratedAvatarViewModel.avatar) === null || _w === void 0 ? void 0 : _w.avatarViewModel) === null || _x === void 0 ? void 0 : _x.image) === null || _y === void 0 ? void 0 : _y.sources) ? new Thumbnails().load(decoratedAvatarViewModel.avatar.avatarViewModel.image.sources)
                     : undefined,
             });
             target.channel = channel;
         }
-        var isLive = ((_1 = (_0 = (_z = (_y = thumbnailBadge === null || thumbnailBadge === void 0 ? void 0 : thumbnailBadge.icon) === null || _y === void 0 ? void 0 : _y.sources) === null || _z === void 0 ? void 0 : _z[0]) === null || _0 === void 0 ? void 0 : _0.clientResource) === null || _1 === void 0 ? void 0 : _1.imageName) === "LIVE";
+        var isLive = ((_2 = (_1 = (_0 = (_z = thumbnailBadge === null || thumbnailBadge === void 0 ? void 0 : thumbnailBadge.icon) === null || _z === void 0 ? void 0 : _z.sources) === null || _0 === void 0 ? void 0 : _0[0]) === null || _1 === void 0 ? void 0 : _1.clientResource) === null || _2 === void 0 ? void 0 : _2.imageName) === "LIVE";
         target.id = data.contentId;
-        target.title = ((_2 = lockupMetadataViewModel === null || lockupMetadataViewModel === void 0 ? void 0 : lockupMetadataViewModel.title) === null || _2 === void 0 ? void 0 : _2.content) || "";
+        target.title = ((_3 = lockupMetadataViewModel === null || lockupMetadataViewModel === void 0 ? void 0 : lockupMetadataViewModel.title) === null || _3 === void 0 ? void 0 : _3.content) || "";
         target.isLive = isLive;
         target.duration = !isLive && (thumbnailBadge === null || thumbnailBadge === void 0 ? void 0 : thumbnailBadge.text) ? getDuration(thumbnailBadge.text) : null;
-        target.thumbnails = ((_5 = (_4 = (_3 = data.contentImage) === null || _3 === void 0 ? void 0 : _3.thumbnailViewModel) === null || _4 === void 0 ? void 0 : _4.image) === null || _5 === void 0 ? void 0 : _5.sources) ? new Thumbnails().load(data.contentImage.thumbnailViewModel.image.sources)
+        target.thumbnails = ((_6 = (_5 = (_4 = data.contentImage) === null || _4 === void 0 ? void 0 : _4.thumbnailViewModel) === null || _5 === void 0 ? void 0 : _5.image) === null || _6 === void 0 ? void 0 : _6.sources) ? new Thumbnails().load(data.contentImage.thumbnailViewModel.image.sources)
             : new Thumbnails();
-        target.viewCount = ((_9 = (_8 = (_7 = (_6 = metadataRows === null || metadataRows === void 0 ? void 0 : metadataRows[1]) === null || _6 === void 0 ? void 0 : _6.metadataParts) === null || _7 === void 0 ? void 0 : _7[0]) === null || _8 === void 0 ? void 0 : _8.text) === null || _9 === void 0 ? void 0 : _9.content) ? stripToInt(metadataRows[1].metadataParts[0].text.content)
+        target.viewCount = ((_10 = (_9 = (_8 = (_7 = metadataRows === null || metadataRows === void 0 ? void 0 : metadataRows[1]) === null || _7 === void 0 ? void 0 : _7.metadataParts) === null || _8 === void 0 ? void 0 : _8[0]) === null || _9 === void 0 ? void 0 : _9.text) === null || _10 === void 0 ? void 0 : _10.content) ? stripToInt(metadataRows[1].metadataParts[0].text.content)
             : null;
-        target.uploadDate = !isLive && ((_10 = metadataRows === null || metadataRows === void 0 ? void 0 : metadataRows[1]) === null || _10 === void 0 ? void 0 : _10.metadataParts)
-            ? (_12 = (_11 = metadataRows[1].metadataParts[metadataRows[1].metadataParts.length - 1]) === null || _11 === void 0 ? void 0 : _11.text) === null || _12 === void 0 ? void 0 : _12.content : undefined;
+        target.uploadDate = !isLive && ((_11 = metadataRows === null || metadataRows === void 0 ? void 0 : metadataRows[1]) === null || _11 === void 0 ? void 0 : _11.metadataParts)
+            ? (_13 = (_12 = metadataRows[1].metadataParts[metadataRows[1].metadataParts.length - 1]) === null || _12 === void 0 ? void 0 : _12.text) === null || _13 === void 0 ? void 0 : _13.content : undefined;
         return target;
     };
     return VideoCompactParser;
