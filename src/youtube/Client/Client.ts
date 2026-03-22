@@ -122,7 +122,8 @@ export class Client {
 
 		if (
 			!data.response?.contents?.twoColumnWatchNextResults?.results?.results?.contents ||
-			data.playerResponse?.playabilityStatus?.status === "ERROR"
+			data.playerResponse?.playabilityStatus?.status === "ERROR" ||
+			!data.playerResponse?.videoDetails
 		) {
 			return undefined as T;
 		}

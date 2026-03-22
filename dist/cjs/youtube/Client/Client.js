@@ -80,7 +80,7 @@ class Client {
     }
     /** Get video information by video id or URL */
     getVideo(videoId) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         return __awaiter(this, void 0, void 0, function* () {
             const nextPromise = this.http.post(`${constants_1.I_END_POINT}/next`, { data: { videoId } });
             // Use ANDROID client for /player endpoint as WEB client returns UNPLAYABLE for some videos
@@ -88,10 +88,11 @@ class Client {
             const [nextResponse, playerResponse] = yield Promise.all([nextPromise, playerPromise]);
             const data = { response: nextResponse.data, playerResponse: playerResponse.data };
             if (!((_e = (_d = (_c = (_b = (_a = data.response) === null || _a === void 0 ? void 0 : _a.contents) === null || _b === void 0 ? void 0 : _b.twoColumnWatchNextResults) === null || _c === void 0 ? void 0 : _c.results) === null || _d === void 0 ? void 0 : _d.results) === null || _e === void 0 ? void 0 : _e.contents) ||
-                ((_g = (_f = data.playerResponse) === null || _f === void 0 ? void 0 : _f.playabilityStatus) === null || _g === void 0 ? void 0 : _g.status) === "ERROR") {
+                ((_g = (_f = data.playerResponse) === null || _f === void 0 ? void 0 : _f.playabilityStatus) === null || _g === void 0 ? void 0 : _g.status) === "ERROR" ||
+                !((_h = data.playerResponse) === null || _h === void 0 ? void 0 : _h.videoDetails)) {
                 return undefined;
             }
-            return (!((_j = (_h = data.playerResponse) === null || _h === void 0 ? void 0 : _h.playabilityStatus) === null || _j === void 0 ? void 0 : _j.liveStreamability)
+            return (!((_k = (_j = data.playerResponse) === null || _j === void 0 ? void 0 : _j.playabilityStatus) === null || _k === void 0 ? void 0 : _k.liveStreamability)
                 ? new Video_1.Video({ client: this }).load(data)
                 : new LiveVideo_1.LiveVideo({ client: this }).load(data));
         });

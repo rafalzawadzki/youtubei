@@ -160,23 +160,24 @@ var Client = /** @class */ (function () {
     };
     /** Get video information by video id or URL */
     Client.prototype.getVideo = function (videoId) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         return __awaiter(this, void 0, void 0, function () {
-            var nextPromise, playerPromise, _k, nextResponse, playerResponse, data;
-            return __generator(this, function (_l) {
-                switch (_l.label) {
+            var nextPromise, playerPromise, _l, nextResponse, playerResponse, data;
+            return __generator(this, function (_m) {
+                switch (_m.label) {
                     case 0:
                         nextPromise = this.http.post(I_END_POINT + "/next", { data: { videoId: videoId } });
                         playerPromise = this.http.postWithClient(I_END_POINT + "/player", ANDROID_CLIENT, { data: { videoId: videoId } });
                         return [4 /*yield*/, Promise.all([nextPromise, playerPromise])];
                     case 1:
-                        _k = __read.apply(void 0, [_l.sent(), 2]), nextResponse = _k[0], playerResponse = _k[1];
+                        _l = __read.apply(void 0, [_m.sent(), 2]), nextResponse = _l[0], playerResponse = _l[1];
                         data = { response: nextResponse.data, playerResponse: playerResponse.data };
                         if (!((_e = (_d = (_c = (_b = (_a = data.response) === null || _a === void 0 ? void 0 : _a.contents) === null || _b === void 0 ? void 0 : _b.twoColumnWatchNextResults) === null || _c === void 0 ? void 0 : _c.results) === null || _d === void 0 ? void 0 : _d.results) === null || _e === void 0 ? void 0 : _e.contents) ||
-                            ((_g = (_f = data.playerResponse) === null || _f === void 0 ? void 0 : _f.playabilityStatus) === null || _g === void 0 ? void 0 : _g.status) === "ERROR") {
+                            ((_g = (_f = data.playerResponse) === null || _f === void 0 ? void 0 : _f.playabilityStatus) === null || _g === void 0 ? void 0 : _g.status) === "ERROR" ||
+                            !((_h = data.playerResponse) === null || _h === void 0 ? void 0 : _h.videoDetails)) {
                             return [2 /*return*/, undefined];
                         }
-                        return [2 /*return*/, (!((_j = (_h = data.playerResponse) === null || _h === void 0 ? void 0 : _h.playabilityStatus) === null || _j === void 0 ? void 0 : _j.liveStreamability)
+                        return [2 /*return*/, (!((_k = (_j = data.playerResponse) === null || _j === void 0 ? void 0 : _j.playabilityStatus) === null || _k === void 0 ? void 0 : _k.liveStreamability)
                                 ? new Video({ client: this }).load(data)
                                 : new LiveVideo({ client: this }).load(data))];
                 }
