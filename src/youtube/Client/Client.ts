@@ -121,13 +121,13 @@ export class Client {
 		const data = { response: nextResponse.data, playerResponse: playerResponse.data };
 
 		if (
-			!data.response?.contents?.twoColumnWatchNextResults.results.results.contents ||
-			data.playerResponse.playabilityStatus.status === "ERROR"
+			!data.response?.contents?.twoColumnWatchNextResults?.results?.results?.contents ||
+			data.playerResponse?.playabilityStatus?.status === "ERROR"
 		) {
 			return undefined as T;
 		}
 
-		return (!data.playerResponse.playabilityStatus.liveStreamability
+		return (!data.playerResponse?.playabilityStatus?.liveStreamability
 			? new Video({ client: this }).load(data)
 			: new LiveVideo({ client: this }).load(data)) as T;
 	}
