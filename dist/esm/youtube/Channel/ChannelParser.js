@@ -64,14 +64,19 @@ var ChannelParser = /** @class */ (function () {
     };
     ChannelParser.parseShelves = function (target, data) {
         var e_1, _a;
-        var _b;
+        var _b, _c, _d, _e, _f, _g, _h, _j;
         var shelves = [];
-        var rawShelves = data.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content
-            .sectionListRenderer.contents;
+        // YouTube serves channels with several different content shapes (e.g. richGridRenderer
+        // for video-tab landings, missing tabs for empty channels, no sectionListRenderer when
+        // the home tab redirects). Treat any missing link in the chain as "no shelves" rather
+        // than crashing the whole channel load — callers only need the header data.
+        var rawShelves = (_h = (_g = (_f = (_e = (_d = (_c = (_b = data.contents) === null || _b === void 0 ? void 0 : _b.twoColumnBrowseResultsRenderer) === null || _c === void 0 ? void 0 : _c.tabs) === null || _d === void 0 ? void 0 : _d[0]) === null || _e === void 0 ? void 0 : _e.tabRenderer) === null || _f === void 0 ? void 0 : _f.content) === null || _g === void 0 ? void 0 : _g.sectionListRenderer) === null || _h === void 0 ? void 0 : _h.contents;
+        if (!Array.isArray(rawShelves))
+            return shelves;
         try {
             for (var rawShelves_1 = __values(rawShelves), rawShelves_1_1 = rawShelves_1.next(); !rawShelves_1_1.done; rawShelves_1_1 = rawShelves_1.next()) {
                 var rawShelf = rawShelves_1_1.value;
-                var shelfRenderer = (_b = rawShelf.itemSectionRenderer) === null || _b === void 0 ? void 0 : _b.contents[0].shelfRenderer;
+                var shelfRenderer = (_j = rawShelf.itemSectionRenderer) === null || _j === void 0 ? void 0 : _j.contents[0].shelfRenderer;
                 if (!shelfRenderer)
                     continue;
                 var title = shelfRenderer.title, content = shelfRenderer.content, subtitle = shelfRenderer.subtitle;

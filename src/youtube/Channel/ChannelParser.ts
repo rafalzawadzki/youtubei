@@ -81,9 +81,15 @@ export class ChannelParser {
 	static parseShelves(target: Channel, data: YoutubeRawData): ChannelShelf[] {
 		const shelves: ChannelShelf[] = [];
 
+		// YouTube serves channels with several different content shapes (e.g. richGridRenderer
+		// for video-tab landings, missing tabs for empty channels, no sectionListRenderer when
+		// the home tab redirects). Treat any missing link in the chain as "no shelves" rather
+		// than crashing the whole channel load — callers only need the header data.
 		const rawShelves =
-			data.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content
-				.sectionListRenderer.contents;
+			data.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer?.content
+				?.sectionListRenderer?.contents;
+
+		if (!Array.isArray(rawShelves)) return shelves;
 
 		for (const rawShelf of rawShelves) {
 			const shelfRenderer = rawShelf.itemSectionRenderer?.contents[0].shelfRenderer;
