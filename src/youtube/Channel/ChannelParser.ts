@@ -16,7 +16,11 @@ export class ChannelParser {
 			tvBanner,
 			mobileBanner,
 			banner;
-		const { c4TabbedHeaderRenderer, pageHeaderRenderer } = data.header;
+		const { c4TabbedHeaderRenderer, pageHeaderRenderer } = data.header || {};
+
+		// Present on every real channel regardless of which header renderer Youtube serves,
+		// so it can stand in when the header is a shape this parser doesn't understand.
+		const channelMetadata = data.metadata?.channelMetadataRenderer;
 
 		if (c4TabbedHeaderRenderer) {
 			channelId = c4TabbedHeaderRenderer.channelId;
@@ -28,45 +32,49 @@ export class ChannelParser {
 			mobileBanner = c4TabbedHeaderRenderer?.mobileBanner?.thumbnails;
 			banner = c4TabbedHeaderRenderer?.banner?.thumbnails;
 		} else {
-			channelId =
-				data.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.endpoint
-					.browseEndpoint.browseId;
-			title = pageHeaderRenderer.pageTitle;
+			channelId = ChannelParser.parseChannelId(data);
+			title = pageHeaderRenderer?.pageTitle;
 
 			const {
 				metadata,
 				image: imageModel,
 				banner: bannerModel,
 				description: descriptionModel,
-			} = pageHeaderRenderer.content.pageHeaderViewModel;
+			} = pageHeaderRenderer?.content?.pageHeaderViewModel || {};
 
-			const metadataParts = metadata.contentMetadataViewModel.metadataRows
-				.map((m: YoutubeRawData) => m.metadataParts)
+			const metadataParts = (metadata?.contentMetadataViewModel?.metadataRows || [])
+				.map((m: YoutubeRawData) => m.metadataParts || [])
 				.flat();
 
+			// Auto-generated channels ("<artist> - Topic", Youtube's own hub pages) ship a
+			// metadata row for the video count only — no handle and no subscriber count — so
+			// every one of these lookups can legitimately come back empty.
 			const handlePart = metadataParts.find((m: YoutubeRawData) =>
-				m.text.styleRuns?.some((s: YoutubeRawData) => "weightLabel" in s)
+				m.text?.styleRuns?.some((s: YoutubeRawData) => "weightLabel" in s)
 			);
 			const subscriberCountPart = metadataParts.find(
 				(m: YoutubeRawData) => m.accessibilityLabel
 			);
 			const videoCountPart = metadataParts.find((m: YoutubeRawData) =>
-				m.text.styleRuns?.some((s: YoutubeRawData) => "startIndex" in s)
+				m.text?.styleRuns?.some((s: YoutubeRawData) => "startIndex" in s)
 			);
 
-			handle = handlePart.text?.content;
-			videoCountText = videoCountPart?.text.content;
-			subscriberCountText = subscriberCountPart?.text.content;
-			avatar = imageModel.decoratedAvatarViewModel.avatar.avatarViewModel.image.sources;
-			banner = bannerModel?.imageBannerViewModel.image.sources;
-			description = descriptionModel?.descriptionPreviewViewModel.description.content;
+			handle = handlePart?.text?.content;
+			videoCountText = videoCountPart?.text?.content;
+			subscriberCountText = subscriberCountPart?.text?.content;
+			avatar = imageModel?.decoratedAvatarViewModel?.avatar?.avatarViewModel?.image
+				?.sources;
+			banner = bannerModel?.imageBannerViewModel?.image?.sources;
+			description = descriptionModel?.descriptionPreviewViewModel?.description?.content;
 		}
 
-		target.id = channelId;
-		target.name = title;
-		target.handle = handle;
-		target.description = description;
-		target.thumbnails = new Thumbnails().load(avatar);
+		target.id = channelId || channelMetadata?.externalId;
+		target.name = title || channelMetadata?.title;
+		target.handle = handle || ChannelParser.parseHandle(channelMetadata?.vanityChannelUrl);
+		target.description = description || channelMetadata?.description;
+		target.thumbnails = new Thumbnails().load(
+			avatar || channelMetadata?.avatar?.thumbnails || []
+		);
 		target.videoCount = videoCountText;
 		target.subscriberCount = subscriberCountText;
 
@@ -76,6 +84,22 @@ export class ChannelParser {
 		target.shelves = ChannelParser.parseShelves(target, data);
 
 		return target;
+	}
+
+	/** Youtube's own hub pages ("Gaming", "Movies & TV") serve a tab with no endpoint at all. */
+	private static parseChannelId(data: YoutubeRawData): string | undefined {
+		const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
+		for (const tab of tabs) {
+			const browseId = tab?.tabRenderer?.endpoint?.browseEndpoint?.browseId;
+			if (browseId) return browseId;
+		}
+		return undefined;
+	}
+
+	/** `vanityChannelUrl` is a `/@handle` URL for channels that have one, `/channel/ID` otherwise. */
+	private static parseHandle(vanityChannelUrl?: string): string | undefined {
+		const handle = vanityChannelUrl?.split("/").pop();
+		return handle?.startsWith("@") ? handle : undefined;
 	}
 
 	static parseShelves(target: Channel, data: YoutubeRawData): ChannelShelf[] {
